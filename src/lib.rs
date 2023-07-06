@@ -1,8 +1,16 @@
 mod utils;
 mod block;
-pub mod color_grid;
-
+mod color_grid;
+mod backend;
+use cursive::{
+    self,
+    view::{Nameable, Selector},
+};
 use wasm_bindgen::prelude::*;
+use web_sys::{
+    HtmlCanvasElement,
+};
+use std::sync::Mutex;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
@@ -16,6 +24,23 @@ extern {
 }
 
 #[wasm_bindgen]
-pub fn run() {
-    alert("Hello, wasm-retris!");
+pub struct Cursive {
+    backend: Mutex<cursive::Cursive>,
 }
+
+#[wasm_bindgen]
+impl Cursive {
+    #[wasm_bindgen(js_name = "retris")]
+    pub fn retris(canvas: HtmlCanvasElement) -> Cursive {
+        alert("Hello, wasm-retris!");
+        let mut siv: cursive::Cursive = cursive::Cursive::new();
+        let color_grid = color_grid::ColorGrid::new().with_name("retris");
+        siv.add_layer(color_grid);
+        siv.focus(&Selector::Name("retris")).unwrap();
+        siv.set_fps(1000);
+        let siv: Mutex<cursive::Cursive> = std::sync::Mutex::new(siv);
+        siv.lock().unwrap().run_with(|| backend::backend(canvas));
+        Cursive { backend: siv }
+    }
+}
+

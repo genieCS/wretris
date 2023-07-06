@@ -1,0 +1,35 @@
+[package]
+name = "wasm_backend"
+version = "0.1.0"
+authors = ["genieCS <geniecs@github.com>"]
+edition = "2018"
+license = "MIT"
+readme = "README.md"
+
+[dependencies]
+wasm-bindgen = "0.2.83"
+getrandom = { version = "0.2", features = ["js"] }
+
+[dependencies.cursive_core]
+cursive_core = "0.3.7"
+
+[dependencies.web-sys]
+version = "0.3.64"
+features = [
+    "HtmlCanvasElement",
+    "CanvasRenderingContext2d",
+    "KeyboardEvent",
+    "TextMetrics",
+    "Window",
+    "Document",
+]
+
+
+[dev-dependencies]
+wasm-bindgen-test = "0.3.13"
+
+[profile.release]
+# Tell `rustc` to optimize for small code size.
+opt-level = "s"
+
+

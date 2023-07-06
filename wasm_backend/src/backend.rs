@@ -1,0 +1,108 @@
+use cursive_core::{
+    event::{Event},
+    Vec2,
+    theme,
+};
+use std::collections::VecDeque;
+use std::rc::Rc;
+use std::cell::RefCell;
+use web_sys::{
+    HtmlCanvasElement,
+    CanvasRenderingContext2d,
+};
+use wasm_bindgen::prelude::*;
+use crate::theme::{ColorPair, cursive_to_color_pair, cursive_to_color, };
+
+
+pub struct Backend {
+    canvas: HtmlCanvasElement,
+    ctx: CanvasRenderingContext2d,
+    color: RefCell<ColorPair>,
+    font_height: usize,
+    font_width: usize,
+    events: Rc<RefCell<VecDeque<Event>>>,
+}
+
+impl Backend {
+    pub fn init(canvas: HtmlCanvasElement) -> Self {
+        canvas.set_width(1000);
+        canvas.set_height(1000);
+        let color = RefCell::new(cursive_to_color_pair(theme::ColorPair {
+            front: theme::Color::Light(theme::BaseColor::White),
+            back: theme::Color::Dark(theme::BaseColor::Black),
+        }));
+
+        let font_height = 20;
+        let ctx: CanvasRenderingContext2d = canvas.get_context("2d").unwrap().unwrap().dyn_into().unwrap();
+        ctx.set_font(&format!("{}px Arial", font_height));
+
+        let font_width = ctx.measure_text(" ").unwrap().width() as usize;        
+        let events = Rc::new(RefCell::new(VecDeque::new()));
+         let cloned = events.clone();
+         let closure = Closure::wrap(Box::new(move |event: web_sys::KeyboardEvent| {
+             for c in event.key().chars() {
+                cloned.borrow_mut().push_back(Event::Char(c));
+             }
+         }) as Box<dyn FnMut(_)>);
+         canvas.add_event_listener_with_callback("keydown", closure.as_ref().unchecked_ref()).unwrap();
+         closure.forget();
+
+        Backend { 
+            canvas,
+            ctx,
+            color,
+            font_height,
+            font_width,
+            events,     
+         }
+    }
+}
+
+impl cursive_core::backend::Backend for Backend {
+    fn poll_event(self: &mut Backend) -> Option<Event> {
+        self.events.borrow_mut().pop_front()
+    }
+
+    fn set_title(self: &mut Backend, title: String) {
+        self.canvas.set_title(&title);
+    }
+
+    fn refresh(self: &mut Backend) {}
+
+    fn has_colors(self: &Backend) -> bool {
+        true
+    }
+
+    fn screen_size(self: &Backend) -> Vec2 {
+        Vec2::new(self.canvas.width() as usize, self.canvas.height() as usize)
+    }
+
+    fn print_at(self: &Backend, pos: Vec2, text: &str) {
+        let color = self.color.borrow();
+        self.ctx.set_fill_style(&JsValue::from_str(&color.back));
+        self.ctx.fill_rect(pos.x as f64, pos.y as f64, (self.font_width * text.len()) as f64, self.font_height as f64);
+        self.ctx.set_fill_style(&JsValue::from_str(&color.front));
+        self.ctx.set_font(&format!("{} Arial", self.font_height));
+        self.ctx.fill_text(text, pos.x as f64, pos.y as f64).unwrap();
+    }
+
+    fn clear(self: &Backend, color: cursive_core::theme::Color) {
+        self.ctx.set_fill_style(&JsValue::from_str(&cursive_to_color(color)));
+    }
+
+    fn set_color(self: &Backend, color_pair: cursive_core::theme::ColorPair) -> cursive_core::theme::ColorPair {
+        let mut color = self.color.borrow_mut();
+        *color = cursive_to_color_pair(color_pair);
+        color_pair
+    }
+
+    fn set_effect(self: &Backend, _: cursive_core::theme::Effect) {
+    }
+
+    fn unset_effect(self: &Backend, _: cursive_core::theme::Effect) {
+    }
+
+    fn name(&self) -> &str {
+        "cursive-wasm-backend"
+    }
+}

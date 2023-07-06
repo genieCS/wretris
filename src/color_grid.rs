@@ -1,12 +1,21 @@
-use std::fmt::Display;
 use crate::block::Color;
 use wasm_bindgen::prelude::*;
-
+use cursive::{
+    event::{Event, EventResult, Key},
+    View,
+    Printer,
+};
 #[wasm_bindgen]
 pub struct ColorGrid {
     width: usize,
     height: usize,
     data: Vec<Color>,
+}
+
+
+#[wasm_bindgen]
+extern {
+    fn alert(s: &str);
 }
 
 #[wasm_bindgen]
@@ -19,10 +28,6 @@ impl ColorGrid {
         }
     }
 
-    pub fn render(&self) -> String {
-        self.to_string()
-    }
-
     pub fn width(&self) -> usize {
         self.width
     }
@@ -31,22 +36,31 @@ impl ColorGrid {
         self.height
     }
 
-    pub fn data(&self) -> *const Color {
-        self.data.as_ptr()
+    fn draw_background(&self, printer: &Printer) {
+        let width = self.width();
+        let height = self.height();
+        for j in 0..height {
+            for i in 0..width {
+                printer.with_color(self.data[width * j + i].to_cursive(), |printer| {
+                    printer.print((2*i, j), "  ");
+                });
+            }
+        }
     }
 }
 
-impl Display for ColorGrid {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let mut s = String::new();
+impl View for ColorGrid {
+    fn draw(&self, printer: &Printer) {
+        self.draw_background(printer);
+    }
 
-        for y in 0..self.height {
-            for x in 0..self.width {
-                s.push_str(&format!("{:?} ", self.data[y * self.width + x]));
-            }
-            s.push('\n');
-        }
+    fn required_size(&mut self, _constraint: cursive::Vec2) -> cursive::Vec2 {
+        let width = self.width();
+        let height = self.height();
+        cursive::Vec2::new(10*width + 3, 10 * height + 10)
+    }
 
-        write!(f, "{}", s)
+    fn on_event(&mut self, event: Event) -> EventResult {
+        EventResult::Consumed(None)
     }
 }
