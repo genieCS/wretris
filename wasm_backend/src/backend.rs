@@ -3,12 +3,14 @@ use cursive_core::{
     Vec2,
     theme,
 };
+use std::cmp::max;
 use std::collections::VecDeque;
 use std::rc::Rc;
 use std::cell::RefCell;
 use web_sys::{
     HtmlCanvasElement,
     CanvasRenderingContext2d,
+    console,
 };
 use wasm_bindgen::prelude::*;
 use crate::theme::{ColorPair, cursive_to_color_pair, cursive_to_color, };
@@ -36,7 +38,7 @@ impl Backend {
         let ctx: CanvasRenderingContext2d = canvas.get_context("2d").unwrap().unwrap().dyn_into().unwrap();
         ctx.set_font(&format!("{}px Arial", font_height));
 
-        let font_width = ctx.measure_text(" ").unwrap().width() as usize;        
+        let font_width = 10;        
         let events = Rc::new(RefCell::new(VecDeque::new()));
          let cloned = events.clone();
          let closure = Closure::wrap(Box::new(move |event: web_sys::KeyboardEvent| {
@@ -67,7 +69,9 @@ impl cursive_core::backend::Backend for Backend {
         self.canvas.set_title(&title);
     }
 
-    fn refresh(self: &mut Backend) {}
+    fn refresh(self: &mut Backend) {
+        console::log_1(&"refresh".into());
+    }
 
     fn has_colors(self: &Backend) -> bool {
         true
@@ -78,12 +82,21 @@ impl cursive_core::backend::Backend for Backend {
     }
 
     fn print_at(self: &Backend, pos: Vec2, text: &str) {
+        // if self.color.borrow().front != cursive_to_color(theme::Color::Dark(theme::BaseColor::Blue)) {
+        //     console::log_1(&JsValue::from_str(&format!("pos: {:?}, length: {}, text: {} font_width: {}", pos, text.len(), text, self.font_width)));
+        // }
         let color = self.color.borrow();
         self.ctx.set_fill_style(&JsValue::from_str(&color.back));
-        self.ctx.fill_rect(pos.x as f64, pos.y as f64, (self.font_width * text.len()) as f64, self.font_height as f64);
+        if self.color.borrow().back != "#c0c0c0" && self.color.borrow().back != "#000080" {
+            let x2 = 400 + (max(pos.x, 448) - 448) * self.font_width;
+            let y2 = 300 + (max(pos.y, 395) - 395) * self.font_height;
+            self.ctx.fill_rect(x2 as f64, y2 as f64, (self.font_width * text.len()) as f64, self.font_height as f64);
+        } else {
+            self.ctx.fill_rect((pos.x * self.font_width) as f64, (pos.y * self.font_height) as f64, (self.font_width * text.len()) as f64, self.font_height as f64);
+        }
         self.ctx.set_fill_style(&JsValue::from_str(&color.front));
         self.ctx.set_font(&format!("{} Arial", self.font_height));
-        self.ctx.fill_text(text, pos.x as f64, pos.y as f64).unwrap();
+        // self.ctx.fill_text(text, pos.x as f64, pos.y as f64).unwrap();
     }
 
     fn clear(self: &Backend, color: cursive_core::theme::Color) {
@@ -91,6 +104,9 @@ impl cursive_core::backend::Backend for Backend {
     }
 
     fn set_color(self: &Backend, color_pair: cursive_core::theme::ColorPair) -> cursive_core::theme::ColorPair {
+        if self.color.borrow().front == cursive_to_color(color_pair.front) && self.color.borrow().back == cursive_to_color(color_pair.back) {
+            return color_pair;
+        }
         let mut color = self.color.borrow_mut();
         *color = cursive_to_color_pair(color_pair);
         color_pair
