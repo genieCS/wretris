@@ -24,15 +24,23 @@ impl BlockWithPos {
          }
     }
 
+    pub fn from(block: Block, pos: Pos) -> Self {
+        BlockWithPos {
+            block,
+            pos,
+        }
+    }
+
     pub fn to_cursive_color(&self) -> ColorStyle {
         self.block.shape.to_cursive()
     }
 
     pub fn cells(&self) -> Vec<Pos> {
-        self.block.cells()
+        self.block.cells().into_iter().map(|(x,y)| (x + self.pos.0, y + self.pos.1)).collect()
     }
 }
 
+#[derive(Clone, Debug)]
 pub struct Block 
 {
     shape: Shape,
