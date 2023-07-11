@@ -2,6 +2,10 @@ mod utils;
 mod block;
 mod color_grid;
 mod backend;
+mod board;
+mod tetris;
+
+use crate::tetris::Tetris;
 use cursive::{
     self,
     view::{Nameable, Selector},
@@ -34,8 +38,8 @@ impl Cursive {
     pub fn retris(canvas: HtmlCanvasElement) -> Cursive {
         alert("Hello, wasm-retris!");
         let mut siv: cursive::Cursive = cursive::Cursive::new();
-        let color_grid = color_grid::ColorGrid::new().with_name("retris");
-        siv.add_layer(color_grid);
+        let tetris = Tetris::new().with_name("retris");
+        siv.add_layer(tetris);
         siv.focus(&Selector::Name("retris")).unwrap();
         siv.set_fps(1000);
         let siv: Mutex<cursive::Cursive> = std::sync::Mutex::new(siv);

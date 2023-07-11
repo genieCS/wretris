@@ -120,14 +120,17 @@ pub enum Color {
 impl Color {
     pub fn to_cursive(&self) -> ColorStyle {
         match self {
-            Color::I => ColorStyle::new(theme::Color::Dark(BaseColor::Blue), theme::Color::Dark(BaseColor::Blue)),
-            Color::O => ColorStyle::new(theme::Color::Dark(BaseColor::Yellow), theme::Color::Dark(BaseColor::Yellow)),
-            Color::T => ColorStyle::new(theme::Color::Dark(BaseColor::Magenta), theme::Color::Dark(BaseColor::Magenta)),
-            Color::S => ColorStyle::new(theme::Color::Dark(BaseColor::Green), theme::Color::Dark(BaseColor::Green)),
-            Color::Z => ColorStyle::new(theme::Color::Dark(BaseColor::Red), theme::Color::Dark(BaseColor::Red)),
-            Color::J => ColorStyle::new(theme::Color::Dark(BaseColor::Cyan), theme::Color::Dark(BaseColor::Cyan)),
-            Color::L => ColorStyle::new(theme::Color::Dark(BaseColor::White), theme::Color::Dark(BaseColor::White)),
-            _ => ColorStyle::new(theme::Color::Dark(BaseColor::Black), theme::Color::Dark(BaseColor::Black)),
+            Color::I => ColorStyle::new(theme::Color::Light(BaseColor::Blue), theme::Color::Light(BaseColor::Blue)),
+            Color::O => ColorStyle::new(theme::Color::Light(BaseColor::Yellow), theme::Color::Light(BaseColor::Yellow)),
+            Color::T => ColorStyle::new(theme::Color::Light(BaseColor::Magenta), theme::Color::Light(BaseColor::Magenta)),
+            Color::S => ColorStyle::new(theme::Color::Light(BaseColor::Green), theme::Color::Light(BaseColor::Green)),
+            Color::Z => ColorStyle::new(theme::Color::Light(BaseColor::Red), theme::Color::Light(BaseColor::Red)),
+            Color::J => ColorStyle::new(theme::Color::Light(BaseColor::Cyan), theme::Color::Light(BaseColor::Cyan)),
+            Color::L => ColorStyle::new(theme::Color::Light(BaseColor::White), theme::Color::Light(BaseColor::White)),
+            Color::EMPTY => ColorStyle::new(theme::Color::Dark(BaseColor::Blue), theme::Color::Dark(BaseColor::Blue)),
+            Color::HINT => ColorStyle::new(theme::Color::Dark(BaseColor::White), theme::Color::Dark(BaseColor::White)),
+            Color::WARNING => ColorStyle::new(theme::Color::Light(BaseColor::Yellow), theme::Color::Light(BaseColor::Yellow)),
+
         }
     }
 }

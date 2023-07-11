@@ -2,6 +2,7 @@ use cursive_core::theme;
 
 pub type Color = String;
 
+#[derive(Debug)]
 pub struct ColorPair {
     pub front: Color,
     pub back: Color,

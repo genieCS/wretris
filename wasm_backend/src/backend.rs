@@ -82,16 +82,18 @@ impl cursive_core::backend::Backend for Backend {
     }
 
     fn print_at(self: &Backend, pos: Vec2, text: &str) {
-        // if self.color.borrow().front != cursive_to_color(theme::Color::Dark(theme::BaseColor::Blue)) {
-        //     console::log_1(&JsValue::from_str(&format!("pos: {:?}, length: {}, text: {} font_width: {}", pos, text.len(), text, self.font_width)));
-        // }
+        if self.color.borrow().back != cursive_to_color(theme::Color::Dark(theme::BaseColor::Blue)) {
+            console::log_1(&JsValue::from_str(&format!("pos: {:?}, length: {}, text: {} font_width: {}", pos, text.len(), text, self.font_width)));
+        }
         let color = self.color.borrow();
         self.ctx.set_fill_style(&JsValue::from_str(&color.back));
-        if self.color.borrow().back != "#c0c0c0" && self.color.borrow().back != "#000080" {
-            let x2 = 400 + (max(pos.x, 448) - 448) * self.font_width;
-            let y2 = 300 + (max(pos.y, 395) - 395) * self.font_height;
+        // if self.color.borrow().back != "#c0c0c0" && self.color.borrow().back != "#000080" {
+        if self.color.borrow().back != "#000080" {
+            let x2 = 50 + (max(pos.x, 490) - 490) * self.font_width;
+            let y2 = 40 + (max(pos.y, 490) - 490) * self.font_height;
             self.ctx.fill_rect(x2 as f64, y2 as f64, (self.font_width * text.len()) as f64, self.font_height as f64);
-        } else {
+        } else { // blue
+            // console::log_1(&JsValue::from_str(&format!("else pos {:?}", pos)));
             self.ctx.fill_rect((pos.x * self.font_width) as f64, (pos.y * self.font_height) as f64, (self.font_width * text.len()) as f64, self.font_height as f64);
         }
         self.ctx.set_fill_style(&JsValue::from_str(&color.front));
@@ -104,6 +106,10 @@ impl cursive_core::backend::Backend for Backend {
     }
 
     fn set_color(self: &Backend, color_pair: cursive_core::theme::ColorPair) -> cursive_core::theme::ColorPair {
+        // if color_pair.back != cursive_core::theme::Color::Dark(cursive_core::theme::BaseColor::Blue) {
+            // console::log_1(&JsValue::from_str(&format!("set color not for background: {:?}", color_pair)));
+        // }
+        // console::log_1(&JsValue::from_str(&format!("set color: {:?}", color_pair)));
         if self.color.borrow().front == cursive_to_color(color_pair.front) && self.color.borrow().back == cursive_to_color(color_pair.back) {
             return color_pair;
         }
