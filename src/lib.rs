@@ -3,6 +3,8 @@ mod block;
 mod color_grid;
 mod backend;
 mod board;
+mod lrd;
+mod pos;
 mod tetris;
 
 use crate::tetris::Tetris;

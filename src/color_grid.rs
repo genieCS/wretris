@@ -1,35 +1,14 @@
-use crate::block::{ BlockWithPos, Color, Pos, };
+use crate::block::{ BlockWithPos, Color, };
+use crate::lrd::{ LRD, LR };
+use crate::pos::Pos;
+
 use std::ops::Index;
 
 #[derive(Clone, Copy)]
-enum LRD {
-    Left,
-    Right,
-    Down,
-}
-
-#[derive(Clone, Copy)]
-pub enum LR {
-    Left,
-    Right,
-}
-
-impl LR {
-    fn to_lrd(&self) -> LRD {
-        match self {
-            LR::Left => LRD::Left,
-            LR::Right => LRD::Right,
-        }
-    }
-}
-
-impl LRD {
-    fn delta(&self) -> Pos {
-        match self {
-            LRD::Left => (-1, 0),
-            LRD::Right => (1, 0),
-            LRD::Down => (0, 1),
-        }
+enum FlipRotate {
+    FlipTurn,
+    Rotate {
+        clockwise: bool,
     }
 }
 
@@ -92,6 +71,61 @@ impl ColorGrid {
             stopped = hit_bottom || !is_drop;
         }
         (gameover, hit_bottom)
+    }
+
+    pub fn rotate(&mut self, hit_bottom: bool, clockwise: bool) -> bool {
+        self.flip_rotate(hit_bottom, FlipRotate::Rotate { clockwise })
+    }
+
+    pub fn flip_turn(&mut self, hit_bottom: bool) -> bool {
+        self.flip_rotate(hit_bottom, FlipRotate::FlipTurn)
+    }
+
+    fn flip_rotate(&mut self, hit_bottom: bool, flip_rotate: FlipRotate) -> bool {
+        let cells: Vec<Pos> = self.block.cells().into_iter()
+        .filter(|(x,y)| 0 <= *x && *x < self.width() as i32 && 0 <= *y && *y < self.height() as i32)
+        .collect();
+        for cell in cells {
+            let mut pos = cell;
+            for _ in 0..10 {
+                let mut possible = true;
+                let next_block = match flip_rotate {
+                    FlipRotate::FlipTurn => self.block.flip_turn(),
+                    FlipRotate::Rotate { clockwise } => self.block.rotate(clockwise),
+                };
+
+                for (x, y) in next_block.cells() {
+                    if x < 0 {
+                        pos.0 += 1;
+                        possible = false;
+                        break;
+                    } else if x >= self.width() as i32 {
+                        pos.0 -= 1;
+                        possible = false;
+                        break;
+                    } else if y < 0 {
+                        pos.1 += 1;
+                        possible = false;
+                        break;
+                    } else if y >= self.height() as i32 {
+                        pos.1 -= 1;
+                        possible = false;
+                        break;
+                    } else if self.is_occupied(x, y) {
+                        possible = false;
+                        break;
+                    }
+                }
+                if possible {
+                    self.block = BlockWithPos::from(next_block.block, pos);
+                    if hit_bottom {
+                        self.on_down(true, false);
+                    }
+                    return true
+                }
+            }
+        }
+        false
     }
 
     fn move_block_lrd(&mut self, lrd: LRD) -> (Option<BlockWithPos>, bool) {

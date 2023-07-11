@@ -1,3 +1,5 @@
+use crate::pos::Pos;
+
 use wasm_bindgen::prelude::*;
 use cursive::{
     theme::{ BaseColor, ColorStyle, self },
@@ -5,7 +7,6 @@ use cursive::{
 
 
 
-pub type Pos = (i32, i32);
 
 pub struct BlockWithPos {
     pub block: Block,
@@ -38,6 +39,20 @@ impl BlockWithPos {
     pub fn cells(&self) -> Vec<Pos> {
         self.block.cells().into_iter().map(|(x,y)| (x + self.pos.0, y + self.pos.1)).collect()
     }
+
+    pub fn flip_turn(&self) -> BlockWithPos {
+        Self {
+            block: self.block.flip_turn(),
+            pos: self.pos,
+        }
+    }
+
+    pub fn rotate(&self, clockwise: bool) -> BlockWithPos {
+        Self {
+            block: self.block.rotate(clockwise),
+            pos: self.pos,
+        }
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -48,13 +63,34 @@ pub struct Block
 }
 
 impl Block {
-    fn cells(&self) -> Vec<Pos> {
+    pub fn cells(&self) -> Vec<Pos> {
         match self.rotation {
             Rotation::R0 => self.shape.cells(),
             Rotation::R90 => self.shape.cells().into_iter().map(|(x,y)| (-y,x)).collect(),
             Rotation::R180 => self.shape.cells().into_iter().map(|(x,y)| (-x,-y)).collect(),
             Rotation::R270 => self.shape.cells().into_iter().map(|(x,y)| (y,-x)).collect(),
         }
+    }
+
+    pub fn flip_turn(&self) -> Self {
+        match (&self.shape, &self.rotation) {
+            (Shape::O, _) => self.clone(),
+            (_, rotation) => Block {
+                shape: self.shape.clone(),
+                rotation: rotation.flip_turn(),
+            },
+        }
+    }
+
+    pub fn rotate(&self, clockwise: bool) -> Self {
+        match (&self.shape, &self.rotation) {
+            (Shape::O, _) => self.clone(),
+            (_, rotation) => Block {
+                shape: self.shape.clone(),
+                rotation: if clockwise { rotation.clockwise() } else { rotation.counter_clockwise() },
+            },
+        }
+
     }
 }
 
@@ -143,4 +179,33 @@ pub enum Rotation {
     R90 = 1,
     R180 = 2,
     R270 = 3,
+}
+
+impl Rotation {
+    pub fn flip_turn(&self) -> Self {
+        match self {
+            Rotation::R0 => Rotation::R180,
+            Rotation::R90 => Rotation::R270,
+            Rotation::R180 => Rotation::R0,
+            Rotation::R270 => Rotation::R90,
+        }
+    }
+
+    pub fn clockwise(&self) -> Self {
+        match self {
+            Rotation::R0 => Rotation::R90,
+            Rotation::R90 => Rotation::R180,
+            Rotation::R180 => Rotation::R270,
+            Rotation::R270 => Rotation::R0,
+        }
+    }
+
+    pub fn counter_clockwise(&self) -> Self {
+        match self {
+            Rotation::R0 => Rotation::R270,
+            Rotation::R90 => Rotation::R0,
+            Rotation::R180 => Rotation::R90,
+            Rotation::R270 => Rotation::R180,
+        }
+    }
 }

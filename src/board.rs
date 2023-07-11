@@ -58,9 +58,9 @@ impl Board {
         match event {
             Event::Key(Key::Left)  => self.grid.handle_lr(LR::Left, hit_bottom, false),
             Event::Key(Key::Right) => self.grid.handle_lr(LR::Right, hit_bottom, false),
-            // Event::Key(Key::Up) | Event::Char('e') => self.rotate(hit_bottom, true),
-            // Event::Char('s') => self.flip_turn(hit_bottom),
-            // Event::Char('w') => self.rotate(hit_bottom, false),
+            Event::Key(Key::Up) | Event::Char('e') => self.grid.rotate(hit_bottom, true),
+            Event::Char('s') => self.grid.flip_turn(hit_bottom),
+            Event::Char('w') => self.grid.rotate(hit_bottom, false),
             Event::Char('a') => self.grid.handle_lr(LR::Left, hit_bottom, true),
             Event::Char('d') => self.grid.handle_lr(LR::Right, hit_bottom, true),
             _ => false,
