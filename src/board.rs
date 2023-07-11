@@ -1,6 +1,7 @@
 use wasm_bindgen::prelude::*;
 
-use crate::color_grid::{ ColorGrid, LR, };
+use crate::color_grid::{ ColorGrid, };
+use crate::lrd::LR;
 use web_sys::console;
 
 #[wasm_bindgen]
@@ -70,7 +71,7 @@ impl Board {
 
 impl View for Board {
     fn draw(&self, printer: &Printer) {
-        console::log_1(&"draw".into());
+        console::log_1(&"draw board".into());
         self.draw_background(printer);
         self.draw_block(printer)
     }

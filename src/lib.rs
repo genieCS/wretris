@@ -5,6 +5,7 @@ mod backend;
 mod board;
 mod lrd;
 mod pos;
+mod queue;
 mod tetris;
 
 use crate::tetris::Tetris;

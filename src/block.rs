@@ -4,7 +4,8 @@ use wasm_bindgen::prelude::*;
 use cursive::{
     theme::{ BaseColor, ColorStyle, self },
 };
-
+use rand::thread_rng;
+use rand::seq::SliceRandom;
 
 
 
@@ -62,7 +63,23 @@ pub struct Block
     rotation: Rotation,
 }
 
+impl Default for Block {
+    fn default() -> Self {
+        Self {
+            shape: Shape::random(),
+            rotation: Rotation::R0,
+        }
+    }
+}
+
 impl Block {
+    pub fn new(shape: Shape) -> Self {
+        Self {
+            shape,
+            rotation: Rotation::R0,
+        }
+    }
+
     pub fn cells(&self) -> Vec<Pos> {
         match self.rotation {
             Rotation::R0 => self.shape.cells(),
@@ -90,7 +107,10 @@ impl Block {
                 rotation: if clockwise { rotation.clockwise() } else { rotation.counter_clockwise() },
             },
         }
+    }
 
+    pub fn color(&self) -> ColorStyle {
+        self.shape.to_color().to_cursive()
     }
 }
 
@@ -108,6 +128,17 @@ pub enum Shape {
 }
 
 impl Shape {
+    fn random() -> Self {
+        Self::all().pop().unwrap()
+    }
+
+    pub fn all() -> Vec<Shape> {
+        let mut shapes = vec![Shape::I, Shape::O, Shape::T, Shape::S, Shape::Z, Shape::J, Shape::L];
+        shapes.shuffle(&mut thread_rng());
+        shapes
+    }
+
+
     pub fn to_cursive(&self) -> ColorStyle {
         self.to_color().to_cursive()
     }

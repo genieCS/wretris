@@ -1,5 +1,10 @@
-use wasm_bindgen::prelude::*;
 use crate::board::Board;
+use crate::queue::Queue;
+
+use cursive::{
+    Vec2,
+};
+use wasm_bindgen::prelude::*;
 
 const SLOW_SPEED: usize = 30;
 const NORMAL_SPEED: usize = 10;
@@ -8,6 +13,8 @@ const FAST_SPEED: usize = 1;
 #[wasm_bindgen]
 pub struct Tetris {
     board: Board,
+    queue: Queue,
+    board_size: Vec2,
     is_paused: bool,
     hit_bottom: bool,
     frame_idx: usize,
@@ -29,8 +36,13 @@ impl Default for Tetris {
 
 impl Tetris {
     pub fn new() -> Self {
+        let mut board = Board::new(10, 20);
+        let board_size = board.required_size(Vec2::new(0,0));
+
         Tetris {
-            board: Board::new(10, 20),
+            board,
+            queue: Queue::new(),
+            board_size,
             is_paused: false,
             hit_bottom: false,
             frame_idx: 0,
@@ -130,7 +142,12 @@ impl Tetris {
 
 impl View for Tetris {
     fn draw(&self, printer: &Printer) {
-        self.board.draw(printer);
+        // self.board.draw(printer);
+
+        let queue_padding = Vec2::new(self.board_size.x + 5, 0);
+        let queue_printer = printer.offset(queue_padding);
+        self.queue.draw(&queue_printer);
+
     }
 
     fn on_event(&mut self, event: Event) -> EventResult {
@@ -150,6 +167,9 @@ impl View for Tetris {
     }
 
     fn required_size(&mut self, constraint: cursive::Vec2) -> cursive::Vec2 {
-        self.board.required_size(constraint)
+        let board_size = self.board.required_size(constraint);
+        let queue_size = self.queue.required_size(constraint);
+        Vec2::new(board_size.x + queue_size.x + 10, board_size.y)
+
     }
 }
