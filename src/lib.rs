@@ -7,6 +7,7 @@ mod lrd;
 mod pos;
 mod queue;
 mod tetris;
+mod score;
 
 use crate::tetris::Tetris;
 use cursive::{

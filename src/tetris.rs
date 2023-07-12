@@ -1,5 +1,6 @@
 use crate::board::Board;
 use crate::queue::Queue;
+use crate::score::Score;
 
 use cursive::{
     theme::{ Color, ColorStyle,  },
@@ -16,7 +17,9 @@ const FAST_SPEED: usize = 1;
 pub struct Tetris {
     board: Board,
     queue: Queue,
+    score: Score,
     board_size: Vec2,
+    score_size: Vec2,
     is_paused: bool,
     hit_bottom: bool,
     frame_idx: usize,
@@ -40,11 +43,15 @@ impl Tetris {
     pub fn new() -> Self {
         let mut board = Board::new(10, 20);
         let board_size = board.required_size(Vec2::new(0,0));
+        let mut score = Score::new();
+        let score_size = score.required_size(Vec2::new(0,0));
 
         Tetris {
             board,
             queue: Queue::new(),
+            score,
             board_size,
+            score_size,
             is_paused: false,
             hit_bottom: false,
             frame_idx: 0,
@@ -80,6 +87,7 @@ impl Tetris {
 
     fn new_game(&mut self) -> EventResult {
         self.board.renew();
+        self.score.renew();
         self.is_paused = false;
         self.hit_bottom = false;
         self.frame_idx = 0;
@@ -108,7 +116,7 @@ impl Tetris {
             return EventResult::Consumed(None);
         }
         let (gameover, hit_bottom) = self.board.on_down(is_drop, is_begin);
-        let gameover = gameover;
+        let gameover = gameover || self.score.is_gameover();
         if gameover {
             self.gameover = true;
             self.toggle_pause();
@@ -128,7 +136,16 @@ impl Tetris {
         EventResult::Consumed(None)
     }
 
-    fn merge_block(&self) {}
+    fn merge_block(&mut self) {
+        // let score = self.board.merge_block();
+        let score = 5;
+        self.score.add(score);
+        // let block = self.queue.pop_and_spawn_new_block();
+        // self.board.insert(block);
+        self.hit_bottom = false;
+        self.max_frame_idx = SLOW_SPEED;
+        self.frame_idx = 0;
+    }
 
     fn pass_event_to_board(&mut self, event: Event) -> EventResult {
         if self.is_paused || self.gameover {
@@ -159,12 +176,18 @@ impl View for Tetris {
 
         let x_padding = 5;
         let y_padding = 2;
-        let board_padding = Vec2::new(x_padding,y_padding);
-        let board_printer = printer.offset(board_padding);
-        self.board.draw(&board_printer);
+        
+        let score_padding = Vec2::new(x_padding, y_padding);
+        let score_printer = printer.offset(score_padding);
 
-        let queue_padding = Vec2::new(x_padding + self.board_size.x + x_padding, y_padding);
+        let board_padding = Vec2::new(x_padding + self.score_size.x + x_padding, y_padding);
+        let board_printer = printer.offset(board_padding);
+
+        let queue_padding = Vec2::new(x_padding + self.score_size.x + x_padding + self.board_size.x + x_padding, y_padding);
         let queue_printer = printer.offset(queue_padding);
+
+        self.score.draw(&score_printer);
+        self.board.draw(&board_printer);
         self.queue.draw(&queue_printer);
 
     }
