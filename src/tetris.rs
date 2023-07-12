@@ -2,8 +2,12 @@ use crate::board::Board;
 use crate::manual::Manual;
 use crate::queue::Queue;
 use crate::score::Score;
+use crate::timer::Timer;
 
 use cursive::{
+    event::{Callback, Event, EventResult, Key},
+    Printer, View,
+    views::Dialog,
     theme::{ Color, ColorStyle,  },
     Vec2,
 };
@@ -20,9 +24,11 @@ pub struct Tetris {
     board: Board,
     queue: Queue,
     score: Score,
+    timer: Timer,
     manual: Manual,
     board_size: Vec2,
     score_size: Vec2,
+    timer_size: Vec2,
     manual_size: Vec2,
     is_paused: bool,
     hit_bottom: bool,
@@ -30,12 +36,6 @@ pub struct Tetris {
     max_frame_idx: usize,
     gameover: bool,
 }
-
-use cursive::{
-    event::{Callback, Event, EventResult, Key},
-    Printer, View,
-    views::Dialog,
-};
 
 impl Default for Tetris {
     fn default() -> Self {
@@ -49,6 +49,8 @@ impl Tetris {
         let board_size = board.required_size(Vec2::new(0,0));
         let mut score = Score::new();
         let score_size = score.required_size(Vec2::new(0,0));
+        let mut timer = Timer::new();
+        let timer_size = timer.required_size(Vec2::new(0,0));
         let mut manual = Manual::new();
         let manual_size = manual.required_size(Vec2::new(0,0));
 
@@ -56,9 +58,11 @@ impl Tetris {
             board,
             queue: Queue::new(),
             score,
+            timer,
             manual,
             board_size,
             score_size,
+            timer_size,
             manual_size,
             is_paused: false,
             hit_bottom: false,
@@ -96,6 +100,8 @@ impl Tetris {
     fn new_game(&mut self) -> EventResult {
         self.board.renew();
         self.score.renew();
+        self.timer.renew();
+        self.queue.renew();
         self.is_paused = false;
         self.hit_bottom = false;
         self.frame_idx = 0;
@@ -108,7 +114,7 @@ impl Tetris {
         self.toggle_pause();
         if self.is_paused {
             EventResult::Consumed(Some(Callback::from_fn(move |s| {
-                s.add_layer(Dialog::info("Game Over!"));
+                s.add_layer(Dialog::info("paused, press m to resume"));
             })))
         } else {
             EventResult::Consumed(None)
@@ -117,6 +123,7 @@ impl Tetris {
 
     fn toggle_pause(&mut self) {
         self.is_paused = !self.is_paused;
+        self.timer.toggle_pause();
     }
 
     fn on_down(&mut self, is_drop: bool, is_begin: bool) -> EventResult {
@@ -145,11 +152,10 @@ impl Tetris {
     }
 
     fn merge_block(&mut self) {
-        // let score = self.board.merge_block();
-        let score = 5;
+        let score = self.board.merge_block();
         self.score.add(score);
-        // let block = self.queue.pop_and_spawn_new_block();
-        // self.board.insert(block);
+        let block = self.queue.pop_and_spawn_new_block();
+        self.board.insert(block);
         self.hit_bottom = false;
         self.max_frame_idx = SLOW_SPEED;
         self.frame_idx = 0;
@@ -188,10 +194,13 @@ impl View for Tetris {
         let score_padding = Vec2::new(x_padding, y_padding);
         let score_printer = printer.offset(score_padding);
 
-        let manual_padding = Vec2::new(x_padding, y_padding + self.score_size.y + y_padding);
+        let timer_padding = Vec2::new(x_padding, y_padding + self.score_size.y + y_padding);
+        let timer_printer = printer.offset(timer_padding);
+
+        let manual_padding = Vec2::new(x_padding, y_padding + self.score_size.y + y_padding + self.timer_size.y + y_padding);
         let manual_printer = printer.offset(manual_padding);
         
-        let first_column_x_padding = max(self.manual_size.x, self.score_size.x);
+        let first_column_x_padding = max(max(self.manual_size.x, self.score_size.x), self.timer_size.x);
 
         let board_padding = Vec2::new(x_padding + first_column_x_padding + x_padding, y_padding);
         let board_printer = printer.offset(board_padding);
@@ -200,6 +209,7 @@ impl View for Tetris {
         let queue_printer = printer.offset(queue_padding);
 
         self.score.draw(&score_printer);
+        self.timer.draw(&timer_printer);
         self.manual.draw(&manual_printer);
         self.board.draw(&board_printer);
         self.queue.draw(&queue_printer);

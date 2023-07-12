@@ -1,6 +1,5 @@
-use crate::block::{ BlockWithPos, Color, };
+use crate::block::{ Block, BlockWithPos, Color, };
 use crate::lrd::{ LRD, LR };
-use crate::pos::Pos;
 
 use std::ops::Index;
 
@@ -13,30 +12,35 @@ enum FlipRotate {
 }
 
 pub struct ColorGrid {
-    width: usize,
-    height: usize,
-    data: Vec<Color>,
+    pub width: usize,
+    pub height: usize,
+    data: Vec<Vec<Color>>,
     pub block: BlockWithPos,
-    background_color: Color,
+    background_color: (Color, Color),
 }
 
 impl ColorGrid {
-    pub fn new(width: usize, height: usize) -> ColorGrid {
+    pub fn new(width: usize, height: usize, background_color: (Color, Color)) -> ColorGrid {
+        let mut data = Vec::with_capacity(height);
+        for h in 0..height {
+            let mut row = Vec::with_capacity(width);
+            for w in 0..width {
+                    let color = if (w + h) % 2 == 0 {
+                        background_color.0
+                    } else {
+                        background_color.1
+                    };
+                    row.push(color);
+            }
+            data.push(row);
+        }
         ColorGrid {
             width,
             height,
-            data: vec![Color::O; width * height],
-            block: BlockWithPos::new(),
-            background_color: Color::O,
+            data,
+            block: Self::insert_random(width),
+            background_color,
         }
-    }
-
-    pub fn width(&self) -> usize {
-        self.width
-    }
-
-    pub fn height(&self) -> usize {
-        self.height
     }
 
     pub fn handle_lr(&mut self, lr: LR, hit_bottom: bool, is_hard: bool) -> bool {
@@ -82,10 +86,7 @@ impl ColorGrid {
     }
 
     fn flip_rotate(&mut self, hit_bottom: bool, flip_rotate: FlipRotate) -> bool {
-        let cells: Vec<Pos> = self.block.cells().into_iter()
-        .filter(|(x,y)| 0 <= *x && *x < self.width() as i32 && 0 <= *y && *y < self.height() as i32)
-        .collect();
-        for cell in cells {
+        for cell in self.block.cells() {
             let mut pos = cell;
             for _ in 0..10 {
                 let mut possible = true;
@@ -99,7 +100,7 @@ impl ColorGrid {
                         pos.0 += 1;
                         possible = false;
                         break;
-                    } else if x >= self.width() as i32 {
+                    } else if x >= self.width as i32 {
                         pos.0 -= 1;
                         possible = false;
                         break;
@@ -107,11 +108,11 @@ impl ColorGrid {
                         pos.1 += 1;
                         possible = false;
                         break;
-                    } else if y >= self.height() as i32 {
+                    } else if y >= self.height as i32 {
                         pos.1 -= 1;
                         possible = false;
                         break;
-                    } else if self.is_occupied(x, y) {
+                    } else if self.is_occupied(x as usize, y as usize) {
                         possible = false;
                         break;
                     }
@@ -145,31 +146,130 @@ impl ColorGrid {
         let delta = lrd.delta();
         let mut moved = true;
         let mut stop = false;
-        let width = self.width();
-        let height = self.height();
         for (x, y) in block.cells() {
             let next_x = x + delta.0;
             let next_y = y + delta.1;
-            if next_x < 0 || next_x >= width as i32 || next_y < 0 || next_y >= height as i32 || self.is_occupied(next_x, next_y) {
+            if next_x < 0 || next_x >= self.width as i32 || next_y < 0 || next_y >= self.height as i32 || self.is_occupied(next_x as usize, next_y as usize) {
                 moved = false;
                 stop = true;
                 break;
-            } else if next_y + 1 == height as i32 || self.is_occupied(next_x, next_y + 1){
+            } else if next_y + 1 == self.height as i32 || self.is_occupied(next_x as usize, next_y as usize + 1){
                 stop = true;
             }
         }
         (moved, stop)
     }
 
-    fn is_occupied(&self, x: i32, y: i32) -> bool {
-        self.data[self.width() *  y as usize + x as usize] != self.background_color
+    fn is_occupied(&self, x: usize, y: usize) -> bool {
+        self.data[y][x] != self.background_color.0 && self.data[y][x] != self.background_color.1
     }
 
-    fn merge_block(&mut self) {}
+    pub fn merge_block(&mut self) -> usize {
+        self.fill_board_with_block();
+        self.remove_rows_if_possible()
+    }
+
+    pub fn insert(&mut self, block: Block) {
+        self.block = BlockWithPos::from(block, (self.width as i32 / 2, 1));
+    }
+
+    fn fill_board_with_block(&mut self) {
+        for cell in self.block.cells() {
+            self.data[self.width * cell.1 as usize][cell.0 as usize] = self.block.color();
+        }
+    }
+
+    fn remove_rows_if_possible(&mut self) -> usize {
+        let mut rows_to_remove = Vec::new();
+        for _y in 0..self.height {
+            let y = self.height - _y - 1;
+            let mut remove = true;
+            for x in 0..self.width {
+                if !self.is_occupied(x, y) {
+                    remove = false;
+                    break;
+                }
+            }
+            if remove {
+                rows_to_remove.push(y);
+            }
+        }
+        let score = rows_to_remove.len();
+        self.remove_rows(rows_to_remove);
+        score
+    }
+
+    fn remove_rows(&mut self, rows_to_remove: Vec<usize>) {
+        if rows_to_remove.is_empty() {
+            return;
+        }
+        let mut fill_y = self.height - 1;
+        let mut check_y = self.height - 1;
+        for row in rows_to_remove {
+            while check_y > row {
+                if fill_y != check_y {
+                    self.data[fill_y] = self.background_row(check_y, fill_y);
+                }
+                fill_y -= 1;
+                check_y -= 1;
+            }
+            check_y = row - 1;
+        }
+        while check_y > 0 {
+            self.data[fill_y] = self.background_row(check_y, fill_y);
+            fill_y -= 1;
+            check_y -= 1;
+        }
+        while fill_y > 0 {
+            for x in 0..self.width {
+                self.set_background(x, fill_y);
+            }
+            fill_y -= 1;
+        }
+    }
+
+    fn set_background(&mut self, x: usize, y: usize) {
+        let color = if (x + y) % 2 == 0 {
+            self.background_color.0
+        } else {
+            self.background_color.1
+        };
+        self.data[y][x] = color;
+    }
+
+    pub fn renew(&mut self) {
+        for x in 0..self.width {
+            for y in 0..self.height {
+                self.set_background(x, y);
+            }
+        }
+        self.block = ColorGrid::insert_random(self.width)
+    }
+
+    fn background_row(&self, from: usize, to: usize) -> Vec<Color> {
+        let mut row = Vec::new();
+        for w in 0..self.width {
+            if self.is_occupied(w, from) {
+                row.push(self.data[from][w]);
+                continue
+            }
+            let color = if (w + to) % 2 == 0 {
+                self.background_color.0
+            } else {
+                self.background_color.1
+            };
+            row.push(color);        
+        }
+        row
+    }
+
+    pub fn insert_random(width: usize) -> BlockWithPos {
+        BlockWithPos::from(Block::default(), (width as i32 / 2, 1))
+    }
 }
 
 impl Index<usize> for ColorGrid {
-    type Output = Color;
+    type Output = Vec<Color>;
 
     fn index(&self, index: usize) -> &Self::Output {
         &self.data[index]

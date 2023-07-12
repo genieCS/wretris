@@ -15,17 +15,6 @@ pub struct BlockWithPos {
 }
 
 impl BlockWithPos {
-    pub fn new() -> Self {
-        BlockWithPos { 
-            block: Block
-            {
-                shape: Shape::J,
-                rotation: Rotation::R0,
-            },
-            pos: (2, 2)
-         }
-    }
-
     pub fn from(block: Block, pos: Pos) -> Self {
         BlockWithPos {
             block,
@@ -53,6 +42,10 @@ impl BlockWithPos {
             block: self.block.rotate(clockwise),
             pos: self.pos,
         }
+    }
+
+    pub fn color(&self) -> Color {
+        self.block.color()
     }
 }
 
@@ -109,8 +102,8 @@ impl Block {
         }
     }
 
-    pub fn color(&self) -> ColorStyle {
-        self.shape.to_color().to_cursive()
+    pub fn color(&self) -> Color {
+        self.shape.to_color()
     }
 }
 

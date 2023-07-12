@@ -1,3 +1,5 @@
+use crate::numbers::padding;
+
 use cursive::{
     theme::{ Color, ColorStyle,},
     View,
@@ -52,12 +54,4 @@ impl View for Score {
         let line = self.num2str();
         cursive::Vec2::new(line.len() + 3, 1)
     }
-}
-
-fn padding(num: usize, length: usize) -> String {
-    let mut output = num.to_string();
-    while output.len() < length {
-        output = format!("0{}", output);
-    }
-    output
 }

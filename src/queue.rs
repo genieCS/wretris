@@ -3,7 +3,6 @@ use cursive:: {
     Printer,
     View,
     theme::{Color, ColorStyle},
-    Vec2,
 };
 use std::collections::VecDeque;
 use web_sys::console;
@@ -48,7 +47,7 @@ impl Queue {
         let mut y_padding = 2;
         for block in &self.blocks {
             for vector in &block.cells() {
-                printer.with_color(block.color(), |printer| {
+                printer.with_color(block.color().to_cursive(), |printer| {
                     printer.print((5 + 2*vector.0, y_padding + vector.1), "  ");
                 });
             }

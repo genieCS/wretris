@@ -1,6 +1,7 @@
 use wasm_bindgen::prelude::*;
 
-use crate::color_grid::{ ColorGrid, };
+use crate::color_grid::ColorGrid;
+use crate::block::{ Block, Color, };
 use crate::lrd::LR;
 use web_sys::console;
 
@@ -16,16 +17,16 @@ use cursive::{
 impl Board {
     pub fn new(width: usize, height: usize) -> Self {
         Board {
-            grid: ColorGrid::new(width, height),
+            grid: ColorGrid::new(width, height, (Color::EMPTY, Color::HINT)),
         }
     }
     fn draw_background(&self, printer: &Printer) {
         // console::log_1(&"draw_background".into());
-        let width = self.grid.width();
-        let height = self.grid.height();
+        let width = self.grid.width;
+        let height = self.grid.height;
         for j in 0..height {
             for i in 0..width {
-                printer.with_color(self.grid[width * j + i].to_cursive(), |printer| {
+                printer.with_color(self.grid[j][i].to_cursive(), |printer| {
                     printer.print((2*i, j), "  ");
                 });
             }
@@ -34,22 +35,25 @@ impl Board {
 
     fn draw_block(&self, printer: &Printer) {
         // console::log_1(&"draw_block".into());
-        let width = self.grid.width();
-        let height = self.grid.height();
-        let pos = self.grid.block.pos;
-        for (i, j) in self.grid.block.cells() {
-            let x = pos.0 + i;
-            let y = pos.1 + j;
-            if x < 0 || x >= width as i32 || y < 0 || y >= height as i32 {
-                continue;
-            }
+        for (x, y) in self.grid.block.cells() {
             printer.with_color(self.grid.block.to_cursive_color(), |printer| {
                 printer.print((2*x as usize, y as usize), "  ");
             });
         }
     }
 
-    pub fn renew(&self) {}
+    pub fn renew(&mut self) {
+        self.grid.renew();
+    }
+
+    pub fn merge_block(&mut self) -> usize {
+        self.grid.merge_block()
+    }
+
+
+    pub fn insert(&mut self, block: Block) {
+        self.grid.insert(block);
+    }
 
     pub fn on_down(&mut self, is_drop: bool, is_begin: bool) -> (bool, bool) {
         self.grid.on_down(is_drop, is_begin)

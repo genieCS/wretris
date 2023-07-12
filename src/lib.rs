@@ -5,9 +5,11 @@ mod backend;
 mod board;
 mod lrd;
 mod manual;
+mod numbers;
 mod pos;
 mod queue;
 mod tetris;
+mod timer;
 mod score;
 
 use crate::tetris::Tetris;

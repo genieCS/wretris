@@ -81,9 +81,9 @@ impl cursive_core::backend::Backend for Backend {
     }
 
     fn print_at(self: &Backend, pos: Vec2, text: &str) {
-        if self.color.borrow().back != cursive_to_color(theme::Color::Dark(theme::BaseColor::Blue)) {
-            console::log_1(&JsValue::from_str(&format!("color: {} pos: {:?}, length: {}, text: {}",self.color.borrow().back, pos, text.len(), text)));
-        }
+        // if self.color.borrow().back != cursive_to_color(theme::Color::Dark(theme::BaseColor::Blue)) {
+        //     console::log_1(&JsValue::from_str(&format!("color: {} pos: {:?}, length: {}, text: {}",self.color.borrow().back, pos, text.len(), text)));
+        // }
         let color = self.color.borrow();
         self.ctx.set_fill_style(&JsValue::from_str(&color.back));
         // if self.color.borrow().back != "#c0c0c0" && self.color.borrow().back != "#000080" {
