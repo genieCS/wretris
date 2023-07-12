@@ -2,9 +2,11 @@ use crate::board::Board;
 use crate::queue::Queue;
 
 use cursive::{
+    theme::{ Color, ColorStyle,  },
     Vec2,
 };
 use wasm_bindgen::prelude::*;
+use web_sys::console;
 
 const SLOW_SPEED: usize = 30;
 const NORMAL_SPEED: usize = 10;
@@ -142,9 +144,26 @@ impl Tetris {
 
 impl View for Tetris {
     fn draw(&self, printer: &Printer) {
-        // self.board.draw(printer);
+        console::log_1(&format!("tetris printer offset: {:?}", printer.offset).into());
+        let mut printer = printer.clone();
+        printer.offset = Vec2::new(0,0);
 
-        let queue_padding = Vec2::new(self.board_size.x + 5, 0);
+        let size = Vec2::new(1000,1000);
+        for j in 0..size.y {
+            for i in 0..size.x {
+                printer.with_color(ColorStyle::new(Color::Rgb(5,247,13), Color::Rgb(5,247,13)), |printer| {
+                    printer.print((i, j), " ");
+                });
+            }
+        }
+
+        let x_padding = 5;
+        let y_padding = 2;
+        let board_padding = Vec2::new(x_padding,y_padding);
+        let board_printer = printer.offset(board_padding);
+        self.board.draw(&board_printer);
+
+        let queue_padding = Vec2::new(x_padding + self.board_size.x + x_padding, y_padding);
         let queue_printer = printer.offset(queue_padding);
         self.queue.draw(&queue_printer);
 
@@ -166,10 +185,8 @@ impl View for Tetris {
         }
     }
 
-    fn required_size(&mut self, constraint: cursive::Vec2) -> cursive::Vec2 {
-        let board_size = self.board.required_size(constraint);
-        let queue_size = self.queue.required_size(constraint);
-        Vec2::new(board_size.x + queue_size.x + 10, board_size.y)
+    fn required_size(&mut self, _constraint: cursive::Vec2) -> cursive::Vec2 {
+        Vec2::new(1000, 1000)
 
     }
 }

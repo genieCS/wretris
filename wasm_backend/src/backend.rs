@@ -83,15 +83,13 @@ impl cursive_core::backend::Backend for Backend {
 
     fn print_at(self: &Backend, pos: Vec2, text: &str) {
         if self.color.borrow().back != cursive_to_color(theme::Color::Dark(theme::BaseColor::Blue)) {
-            console::log_1(&JsValue::from_str(&format!("pos: {:?}, length: {}, text: {} font_width: {}", pos, text.len(), text, self.font_width)));
+            console::log_1(&JsValue::from_str(&format!("color: {} pos: {:?}, length: {}, text: {} font_width: {}",self.color.borrow().back, pos, text.len(), text, self.font_width)));
         }
         let color = self.color.borrow();
         self.ctx.set_fill_style(&JsValue::from_str(&color.back));
         // if self.color.borrow().back != "#c0c0c0" && self.color.borrow().back != "#000080" {
         if self.color.borrow().back != "#000080" {
-            let x2 = 50 + (max(pos.x, 490) - 490) * self.font_width;
-            let y2 = 40 + (max(pos.y, 490) - 490) * self.font_height;
-            self.ctx.fill_rect(x2 as f64, y2 as f64, (self.font_width * text.len()) as f64, self.font_height as f64);
+            self.ctx.fill_rect((pos.x * self.font_width) as f64, (pos.y * self.font_height) as f64, (self.font_width * text.len()) as f64, self.font_height as f64);
         } else { // blue
             // console::log_1(&JsValue::from_str(&format!("else pos {:?}", pos)));
             self.ctx.fill_rect((pos.x * self.font_width) as f64, (pos.y * self.font_height) as f64, (self.font_width * text.len()) as f64, self.font_height as f64);

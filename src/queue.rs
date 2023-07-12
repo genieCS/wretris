@@ -45,11 +45,11 @@ impl Queue {
     }
 
     fn draw_blocks(&self, printer: &Printer) {
-        let mut y_padding = 5;
+        let mut y_padding = 2;
         for block in &self.blocks {
             for vector in &block.cells() {
                 printer.with_color(block.color(), |printer| {
-                    printer.print((2*vector.0, y_padding + vector.1), "  ");
+                    printer.print((5 + 2*vector.0, y_padding + vector.1), "  ");
                 });
             }
             y_padding += 5;
