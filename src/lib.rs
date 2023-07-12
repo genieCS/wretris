@@ -4,6 +4,7 @@ mod color_grid;
 mod backend;
 mod board;
 mod lrd;
+mod manual;
 mod pos;
 mod queue;
 mod tetris;

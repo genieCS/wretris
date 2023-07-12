@@ -1,4 +1,5 @@
 use crate::board::Board;
+use crate::manual::Manual;
 use crate::queue::Queue;
 use crate::score::Score;
 
@@ -6,6 +7,7 @@ use cursive::{
     theme::{ Color, ColorStyle,  },
     Vec2,
 };
+use std::cmp::max;
 use wasm_bindgen::prelude::*;
 use web_sys::console;
 
@@ -18,8 +20,10 @@ pub struct Tetris {
     board: Board,
     queue: Queue,
     score: Score,
+    manual: Manual,
     board_size: Vec2,
     score_size: Vec2,
+    manual_size: Vec2,
     is_paused: bool,
     hit_bottom: bool,
     frame_idx: usize,
@@ -45,13 +49,17 @@ impl Tetris {
         let board_size = board.required_size(Vec2::new(0,0));
         let mut score = Score::new();
         let score_size = score.required_size(Vec2::new(0,0));
+        let mut manual = Manual::new();
+        let manual_size = manual.required_size(Vec2::new(0,0));
 
         Tetris {
             board,
             queue: Queue::new(),
             score,
+            manual,
             board_size,
             score_size,
+            manual_size,
             is_paused: false,
             hit_bottom: false,
             frame_idx: 0,
@@ -180,13 +188,19 @@ impl View for Tetris {
         let score_padding = Vec2::new(x_padding, y_padding);
         let score_printer = printer.offset(score_padding);
 
-        let board_padding = Vec2::new(x_padding + self.score_size.x + x_padding, y_padding);
+        let manual_padding = Vec2::new(x_padding, y_padding + self.score_size.y + y_padding);
+        let manual_printer = printer.offset(manual_padding);
+        
+        let first_column_x_padding = max(self.manual_size.x, self.score_size.x);
+
+        let board_padding = Vec2::new(x_padding + first_column_x_padding + x_padding, y_padding);
         let board_printer = printer.offset(board_padding);
 
-        let queue_padding = Vec2::new(x_padding + self.score_size.x + x_padding + self.board_size.x + x_padding, y_padding);
+        let queue_padding = Vec2::new(x_padding + first_column_x_padding + x_padding + self.board_size.x + x_padding, y_padding);
         let queue_printer = printer.offset(queue_padding);
 
         self.score.draw(&score_printer);
+        self.manual.draw(&manual_printer);
         self.board.draw(&board_printer);
         self.queue.draw(&queue_printer);
 
