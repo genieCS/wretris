@@ -1,8 +1,8 @@
 use crate::pos::Pos;
 
 use wasm_bindgen::prelude::*;
-use cursive::{
-    theme::{ BaseColor, ColorStyle, self },
+use cursive::theme::{
+    BaseColor, ColorStyle, self,
 };
 use rand::thread_rng;
 use rand::seq::SliceRandom;
@@ -86,7 +86,7 @@ impl Block {
         match (&self.shape, &self.rotation) {
             (Shape::O, _) => self.clone(),
             (_, rotation) => Block {
-                shape: self.shape.clone(),
+                shape: self.shape,
                 rotation: rotation.flip_turn(),
             },
         }
@@ -96,7 +96,7 @@ impl Block {
         match (&self.shape, &self.rotation) {
             (Shape::O, _) => self.clone(),
             (_, rotation) => Block {
-                shape: self.shape.clone(),
+                shape: self.shape,
                 rotation: if clockwise { rotation.clockwise() } else { rotation.counter_clockwise() },
             },
         }
@@ -162,7 +162,7 @@ impl Shape {
 }
 
 #[wasm_bindgen]
-#[repr(u16)]
+#[repr(u8)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Color {
     I = 0,

@@ -3,7 +3,6 @@ use wasm_bindgen::prelude::*;
 use crate::color_grid::ColorGrid;
 use crate::block::{ Block, Color, };
 use crate::lrd::LR;
-use web_sys::console;
 
 #[wasm_bindgen]
 pub struct Board {
@@ -26,7 +25,7 @@ impl Board {
         let height = self.grid.height;
         for j in 0..height {
             for i in 0..width {
-                printer.with_color(self.grid[j][i].to_cursive(), |printer| {
+                printer.with_color(self.grid[self.grid.width * j + i].to_cursive(), |printer| {
                     printer.print((2*i, j), "  ");
                 });
             }
@@ -75,7 +74,6 @@ impl Board {
 
 impl View for Board {
     fn draw(&self, printer: &Printer) {
-        console::log_1(&"draw board".into());
         self.draw_background(printer);
         self.draw_block(printer)
     }
