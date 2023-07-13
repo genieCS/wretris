@@ -18,7 +18,6 @@ use cursive::{
     view::{Nameable, Selector},
 };
 use wasm_bindgen::prelude::*;
-use web_sys::HtmlCanvasElement;
 use std::sync::Mutex;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
@@ -40,7 +39,7 @@ pub struct Cursive {
 #[wasm_bindgen]
 impl Cursive {
     #[wasm_bindgen(js_name = "retris")]
-    pub fn retris(canvas: HtmlCanvasElement) -> Cursive {
+    pub fn retris() -> Cursive {
         utils::set_panic_hook();
         alert("Hello, wasm-retris!");
         let mut siv: cursive::Cursive = cursive::Cursive::new();
@@ -49,7 +48,7 @@ impl Cursive {
         siv.focus(&Selector::Name("retris")).unwrap();
         siv.set_fps(1000);
         let siv: Mutex<cursive::Cursive> = std::sync::Mutex::new(siv);
-        siv.lock().unwrap().run_with(|| backend::backend(canvas));
+        siv.lock().unwrap().run_with(|| backend::backend());
         Cursive { backend: siv }
     }
 }

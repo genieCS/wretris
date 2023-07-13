@@ -1,10 +1,8 @@
 use cursive_buffered_backend::BufferedBackend;
-use web_sys::{
-    HtmlCanvasElement,
-};
+use cursive::backends;
 
-pub fn backend(canvas: HtmlCanvasElement) -> Box<BufferedBackend> {
-    let wasm_backend = wasm_backend::backend::Backend::init(canvas);
-    let buffered_backend = BufferedBackend::new(Box::new(wasm_backend));
+pub fn backend() -> Box<BufferedBackend> {
+    let wasm_backend = backends::wasm::Backend::init().unwrap();
+    let buffered_backend = BufferedBackend::new(wasm_backend);
     Box::new(buffered_backend)
 }

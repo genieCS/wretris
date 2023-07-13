@@ -5,7 +5,6 @@ use cursive:: {
     theme::{Color, ColorStyle},
 };
 use std::collections::VecDeque;
-use web_sys::console;
 
 pub struct Queue {
     pub blocks: VecDeque<Block>,
@@ -70,7 +69,6 @@ impl Queue {
 
 impl View for Queue {
     fn draw(&self, printer: &Printer) {
-        console::log_1(&"draw by queue".into());
         self.draw_container(printer);
         self.draw_blocks(printer);
     }
