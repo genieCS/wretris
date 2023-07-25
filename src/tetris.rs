@@ -134,7 +134,7 @@ impl Tetris {
         if gameover {
             self.gameover = true;
             self.toggle_pause();
-            console::log_1(&format!("gameover").into());
+            console::log_1(&"gameover".to_string().into());
             return EventResult::Consumed(Some(Callback::from_fn(move |s| {
                 s.add_layer(Dialog::info("Game Over!"));
             })));

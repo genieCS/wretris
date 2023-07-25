@@ -17,10 +17,11 @@ pub struct ColorGrid {
     data: Vec<Color>,
     pub block: BlockWithPos,
     background_color: (Color, Color),
+    pub hint_color: Color,
 }
 
 impl ColorGrid {
-    pub fn new(width: usize, height: usize, background_color: (Color, Color)) -> ColorGrid {
+    pub fn new(width: usize, height: usize, background_color: (Color, Color), hint_color: Color) -> ColorGrid {
         let mut data = Vec::with_capacity(width * height);
         for h in 0..height {
             for w in 0..width {
@@ -38,6 +39,7 @@ impl ColorGrid {
             data,
             block: Self::insert_random(width),
             background_color,
+            hint_color,
         }
     }
 
@@ -46,7 +48,7 @@ impl ColorGrid {
         let mut stopped = false;
         let mut moved = false;
         while !stopped {
-            let (block, hit_wall) = self.move_block_lrd(lrd);
+            let (block, hit_wall) = self.move_block_lrd(&self.block, lrd);
             if block.is_some() {
                 moved = true;
                 self.block = block.unwrap();
@@ -65,7 +67,7 @@ impl ColorGrid {
         let mut current: Option<BlockWithPos>;
         let gameover = false;
         while !stopped {
-           (current, hit_bottom)= self.move_block_lrd(LRD::Down);
+           (current, hit_bottom)= self.move_block_lrd(&self.block, LRD::Down);
             match current {
                 Some(b) => self.block = b,
                 None => return (is_begin, true),
@@ -127,8 +129,7 @@ impl ColorGrid {
         false
     }
 
-    fn move_block_lrd(&mut self, lrd: LRD) -> (Option<BlockWithPos>, bool) {
-        let block = &self.block;
+    fn move_block_lrd(&self, block: &BlockWithPos, lrd: LRD) -> (Option<BlockWithPos>, bool) {
         let (can_move, stop) = self.can_move(block, lrd);
         if !can_move {
             return (None, stop)
@@ -261,6 +262,17 @@ impl ColorGrid {
 
     pub fn insert_random(width: usize) -> BlockWithPos {
         BlockWithPos::from(Block::default(), (width as i32 / 2, 1))
+    }
+
+    pub fn hint(&self) -> BlockWithPos {
+        let mut hint = self.block.clone();
+        let mut stopped = false;
+        while !stopped {
+            let (block, hit_bottom) = self.move_block_lrd(&hint, LRD::Down);
+            stopped = hit_bottom || block.is_none();
+            hint = block.unwrap_or(hint);
+        }
+        hint
     }
 }
 

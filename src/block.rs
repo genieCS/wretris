@@ -9,6 +9,7 @@ use rand::seq::SliceRandom;
 
 
 
+#[derive(Clone, Debug)]
 pub struct BlockWithPos {
     pub block: Block,
     pub pos: Pos,

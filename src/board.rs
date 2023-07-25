@@ -16,7 +16,7 @@ use cursive::{
 impl Board {
     pub fn new(width: usize, height: usize) -> Self {
         Board {
-            grid: ColorGrid::new(width, height, (Color::GRID1, Color::GRID2)),
+            grid: ColorGrid::new(width, height, (Color::GRID1, Color::GRID2), Color::HINT),
         }
     }
     fn draw_background(&self, printer: &Printer) {
@@ -36,6 +36,14 @@ impl Board {
         // console::log_1(&"draw_block".into());
         for (x, y) in self.grid.block.cells() {
             printer.with_color(self.grid.block.to_cursive_color(), |printer| {
+                printer.print((2*x as usize, y as usize), "  ");
+            });
+        }
+    }
+
+    fn draw_hint(&self, printer: &Printer) {
+        for (x, y) in self.grid.hint().cells() {
+            printer.with_color(self.grid.hint_color.to_cursive(), |printer| {
                 printer.print((2*x as usize, y as usize), "  ");
             });
         }
@@ -75,6 +83,7 @@ impl Board {
 impl View for Board {
     fn draw(&self, printer: &Printer) {
         self.draw_background(printer);
+        self.draw_hint(printer);
         self.draw_block(printer)
     }
 
