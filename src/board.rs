@@ -1,7 +1,7 @@
 use wasm_bindgen::prelude::*;
 
 use crate::color_grid::ColorGrid;
-use crate::block::{ Block, Color, };
+use crate::block::{ Block, BColor as Color, };
 use crate::lrd::LR;
 
 #[wasm_bindgen]
@@ -16,7 +16,7 @@ use cursive::{
 impl Board {
     pub fn new(width: usize, height: usize) -> Self {
         Board {
-            grid: ColorGrid::new(width, height, (Color::EMPTY, Color::HINT)),
+            grid: ColorGrid::new(width, height, (Color::GRID1, Color::GRID2)),
         }
     }
     fn draw_background(&self, printer: &Printer) {

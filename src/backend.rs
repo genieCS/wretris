@@ -1,8 +1,7 @@
-use cursive_buffered_backend::BufferedBackend;
-use cursive::backends;
+use cursive::backend::Backend;
+use cursive::backends::wasm;
 
-pub fn backend() -> Box<BufferedBackend> {
-    let wasm_backend = backends::wasm::Backend::init().unwrap();
-    let buffered_backend = BufferedBackend::new(wasm_backend);
-    Box::new(buffered_backend)
+pub fn backend() -> Box<dyn Backend> {
+    let wasm_backend: Box<dyn Backend> = wasm::Backend::init().unwrap();
+    wasm_backend
 }

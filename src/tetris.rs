@@ -8,11 +8,11 @@ use cursive::{
     event::{Callback, Event, EventResult, Key},
     Printer, View,
     views::Dialog,
-    theme::{ Color, ColorStyle,  },
     Vec2,
 };
 use std::cmp::max;
 use wasm_bindgen::prelude::*;
+use web_sys::console;
 
 const SLOW_SPEED: usize = 30;
 const NORMAL_SPEED: usize = 10;
@@ -134,6 +134,7 @@ impl Tetris {
         if gameover {
             self.gameover = true;
             self.toggle_pause();
+            console::log_1(&format!("gameover").into());
             return EventResult::Consumed(Some(Callback::from_fn(move |s| {
                 s.add_layer(Dialog::info("Game Over!"));
             })));
@@ -176,15 +177,6 @@ impl View for Tetris {
     fn draw(&self, printer: &Printer) {
         let mut printer = printer.clone();
         printer.offset = Vec2::new(0,0);
-
-        let size = Vec2::new(1000,1000);
-        for j in 0..size.y {
-            for i in 0..size.x {
-                printer.with_color(ColorStyle::new(Color::Rgb(5,247,13), Color::Rgb(5,247,13)), |printer| {
-                    printer.print((i, j), " ");
-                });
-            }
-        }
 
         let x_padding = 5;
         let y_padding = 2;

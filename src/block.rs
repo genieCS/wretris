@@ -44,7 +44,7 @@ impl BlockWithPos {
         }
     }
 
-    pub fn color(&self) -> Color {
+    pub fn color(&self) -> BColor {
         self.block.color()
     }
 }
@@ -102,7 +102,7 @@ impl Block {
         }
     }
 
-    pub fn color(&self) -> Color {
+    pub fn color(&self) -> BColor {
         self.shape.to_color()
     }
 }
@@ -136,15 +136,15 @@ impl Shape {
         self.to_color().to_cursive()
     }
 
-    fn to_color(&self) -> Color {
+    fn to_color(&self) -> BColor {
         match self {
-            Shape::I => Color::I,
-            Shape::O => Color::O,
-            Shape::T => Color::T,
-            Shape::S => Color::S,
-            Shape::Z => Color::Z,
-            Shape::J => Color::J,
-            Shape::L => Color::L,
+            Shape::I => BColor::I,
+            Shape::O => BColor::O,
+            Shape::T => BColor::T,
+            Shape::S => BColor::S,
+            Shape::Z => BColor::Z,
+            Shape::J => BColor::J,
+            Shape::L => BColor::L,
         }
     }
 
@@ -164,7 +164,7 @@ impl Shape {
 #[wasm_bindgen]
 #[repr(u8)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum Color {
+pub enum BColor {
     I = 0,
     O = 1,
     T = 2,
@@ -172,24 +172,26 @@ pub enum Color {
     Z = 4,
     J = 5,
     L = 6,
-    EMPTY = 7,
-    HINT = 8,
-    WARNING = 9,
+    GRID1 = 7,
+    GRID2 = 8,
+    HINT = 9,
+    WARNING = 10,
 }
 
-impl Color {
+impl BColor {
     pub fn to_cursive(&self) -> ColorStyle {
         match self {
-            Color::I => ColorStyle::new(theme::Color::Light(BaseColor::Blue), theme::Color::Light(BaseColor::Blue)),
-            Color::O => ColorStyle::new(theme::Color::Light(BaseColor::Yellow), theme::Color::Light(BaseColor::Yellow)),
-            Color::T => ColorStyle::new(theme::Color::Light(BaseColor::Magenta), theme::Color::Light(BaseColor::Magenta)),
-            Color::S => ColorStyle::new(theme::Color::Light(BaseColor::Green), theme::Color::Light(BaseColor::Green)),
-            Color::Z => ColorStyle::new(theme::Color::Light(BaseColor::Red), theme::Color::Light(BaseColor::Red)),
-            Color::J => ColorStyle::new(theme::Color::Light(BaseColor::Cyan), theme::Color::Light(BaseColor::Cyan)),
-            Color::L => ColorStyle::new(theme::Color::Light(BaseColor::White), theme::Color::Light(BaseColor::White)),
-            Color::EMPTY => ColorStyle::new(theme::Color::Dark(BaseColor::Blue), theme::Color::Dark(BaseColor::Blue)),
-            Color::HINT => ColorStyle::new(theme::Color::Dark(BaseColor::White), theme::Color::Dark(BaseColor::White)),
-            Color::WARNING => ColorStyle::new(theme::Color::Light(BaseColor::Yellow), theme::Color::Light(BaseColor::Yellow)),
+            BColor::I => ColorStyle::new(theme::Color::Light(BaseColor::Blue), theme::Color::Light(BaseColor::Blue)),
+            BColor::O => ColorStyle::new(theme::Color::Light(BaseColor::Yellow), theme::Color::Light(BaseColor::Yellow)),
+            BColor::T => ColorStyle::new(theme::Color::Light(BaseColor::Magenta), theme::Color::Light(BaseColor::Magenta)),
+            BColor::S => ColorStyle::new(theme::Color::Light(BaseColor::Green), theme::Color::Light(BaseColor::Green)),
+            BColor::Z => ColorStyle::new(theme::Color::Light(BaseColor::Red), theme::Color::Light(BaseColor::Red)),
+            BColor::J => ColorStyle::new(theme::Color::Light(BaseColor::Cyan), theme::Color::Light(BaseColor::Cyan)),
+            BColor::L => ColorStyle::new(theme::Color::Light(BaseColor::White), theme::Color::Light(BaseColor::White)),
+            BColor::GRID1 => ColorStyle::new(theme::Color::Rgb(0xb2, 0xe6, 0xc6), theme::Color::Rgb(0xb2, 0xe6, 0xc6)),
+            BColor::GRID2 => ColorStyle::new(theme::Color::Rgb(0x08, 0x95, 0x62), theme::Color::Rgb(0x08, 0x95, 0x62)),
+            BColor::HINT => ColorStyle::new(theme::Color::Dark(BaseColor::White), theme::Color::Dark(BaseColor::White)),
+            BColor::WARNING => ColorStyle::new(theme::Color::Light(BaseColor::Yellow), theme::Color::Light(BaseColor::Yellow)),
 
         }
     }

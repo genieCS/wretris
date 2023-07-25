@@ -1,4 +1,4 @@
-use crate::block::{ Block, BlockWithPos, Color, };
+use crate::block::{ Block, BlockWithPos, BColor as Color, };
 use crate::lrd::{ LRD, LR };
 
 use std::ops::Index;

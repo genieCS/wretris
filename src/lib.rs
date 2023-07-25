@@ -12,7 +12,6 @@ mod tetris;
 mod timer;
 mod score;
 
-use crate::tetris::Tetris;
 use cursive::{
     self,
     view::{Nameable, Selector},
@@ -39,16 +38,16 @@ pub struct Cursive {
 #[wasm_bindgen]
 impl Cursive {
     #[wasm_bindgen(js_name = "retris")]
-    pub fn retris() -> Cursive {
+    pub async fn retris() -> Cursive {
         utils::set_panic_hook();
         alert("Hello, wasm-retris!");
         let mut siv: cursive::Cursive = cursive::Cursive::new();
-        let tetris = Tetris::new().with_name("retris");
+        let tetris = crate::tetris::Tetris::new().with_name("retris");
         siv.add_layer(tetris);
         siv.focus(&Selector::Name("retris")).unwrap();
         siv.set_fps(1000);
         let siv: Mutex<cursive::Cursive> = std::sync::Mutex::new(siv);
-        siv.lock().unwrap().run_with(|| backend::backend());
+        siv.lock().unwrap().run_with_async(|| backend::backend()).await;
         Cursive { backend: siv }
     }
 }

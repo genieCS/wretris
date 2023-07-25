@@ -12,6 +12,7 @@ default = ["console_error_panic_hook"]
 
 [dependencies]
 wasm-bindgen = "0.2.83"
+wasm-bindgen-futures = "0.4.18"
 console_error_panic_hook = { version = "0.1.6", optional = true }
 wee_alloc = { version = "0.4.5", optional = true }
 getrandom = { version = "0.2", features = ["js"] }
@@ -22,13 +23,11 @@ js-sys = "0.3.64"
 path = "../cursive/cursive"
 default = ["wasm-backend"]
 
-[dependencies.cursive_buffered_backend]
-path = "../cursive_buffered_backend"
-
 [dependencies.web-sys]
 version = "0.3.64"
 features = [
     "HtmlCanvasElement",
+    "console",
 ]
 
 [dev-dependencies]
