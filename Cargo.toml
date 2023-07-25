@@ -1,8 +1,12 @@
 [package]
-name = "wasm-retris"
+name = "wretris"
 version = "0.1.0"
 authors = ["genieCS <geniecs@github.com>"]
 edition = "2018"
+description = "This is a Rust implementation of tetris using the Cursive library with wasm backend"
+license = "MIT"
+readme = "README.md"
+keywords = ["tui", "cursive", "tetris", "wasm"]
 
 [lib]
 crate-type = ["cdylib", "rlib"]
@@ -20,7 +24,7 @@ rand = "0.8.4"
 js-sys = "0.3.64"
 
 [dependencies.cursive]
-path = "../cursive/cursive"
+git = "https://github.com/geniecs/cursive"
 default = ["wasm-backend"]
 
 [dependencies.web-sys]
