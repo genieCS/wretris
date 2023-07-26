@@ -1,5 +1,6 @@
 use crate::board::Board;
 use crate::manual::Manual;
+use crate::pause::Pause;
 use crate::queue::Queue;
 use crate::score::Score;
 use crate::timer::Timer;
@@ -72,7 +73,7 @@ impl Tetris {
     }
 
     fn handle_merge_and_pass(&mut self, event: Event) -> EventResult {
-        if self.gameover && event != Event::Char('n') {
+        if self.gameover && event != Event::Char('n') && event != Event::Char('N') {
             return EventResult::Consumed(None);
         }
         let is_begin = self.hit_bottom;
@@ -112,7 +113,7 @@ impl Tetris {
         self.toggle_pause();
         if self.is_paused {
             EventResult::Consumed(Some(Callback::from_fn(move |s| {
-                s.add_layer(Dialog::info("paused, press m to resume"));
+                s.add_layer(Pause::new());
             })))
         } else {
             EventResult::Consumed(None)
@@ -174,9 +175,6 @@ impl Tetris {
 
 impl View for Tetris {
     fn draw(&self, printer: &Printer) {
-        let mut printer = printer.clone();
-        printer.offset = Vec2::new(0,0);
-
         let x_padding = 5;
         let y_padding = 2;
         

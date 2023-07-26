@@ -3,9 +3,11 @@ mod block;
 mod color_grid;
 mod backend;
 mod board;
+mod gameover;
 mod lrd;
 mod manual;
 mod numbers;
+mod pause;
 mod pos;
 mod queue;
 mod tetris;
@@ -47,7 +49,7 @@ impl Cursive {
         siv.focus(&Selector::Name("retris")).unwrap();
         siv.set_fps(1000);
         let siv: Mutex<cursive::Cursive> = std::sync::Mutex::new(siv);
-        siv.lock().unwrap().run_with_async(|| backend::backend()).await;
+        siv.lock().unwrap().run_with(|| backend::backend()).await;
         Cursive { backend: siv }
     }
 }
