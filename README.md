@@ -1,5 +1,7 @@
 # wretris
-w(asm) + r(ust) + (t)etris 
+w(asm) + r(ust) + (t)etris
+<img width="982" alt="Screenshot 2023-07-26 at 4 43 56 PM" src="https://github.com/genieCS/wretris/assets/35099832/064c89e8-f401-4374-b0c6-9e2b4cc8d25e">
+
 This is a simple implementation of the classic tetris game in Rust using [Cursive](https://github.com/gyscos/cursive) library.
 
 # Features
