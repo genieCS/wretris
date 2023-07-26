@@ -1,7 +1,6 @@
 /target
 wasm_backend/target
 **/*.rs.bk
-Cargo.lock
 bin/
 pkg/
 wasm-pack.log
