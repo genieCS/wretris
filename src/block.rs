@@ -189,9 +189,9 @@ impl BColor {
             BColor::Z => ColorStyle::new(theme::Color::Light(BaseColor::Red), theme::Color::Light(BaseColor::Red)),
             BColor::J => ColorStyle::new(theme::Color::Light(BaseColor::Cyan), theme::Color::Light(BaseColor::Cyan)),
             BColor::L => ColorStyle::new(theme::Color::Light(BaseColor::White), theme::Color::Light(BaseColor::White)),
-            BColor::GRID1 => ColorStyle::new(theme::Color::Rgb(0xb2, 0xe6, 0xc6), theme::Color::Rgb(0xb2, 0xe6, 0xc6)),
-            BColor::GRID2 => ColorStyle::new(theme::Color::Rgb(0x08, 0x95, 0x62), theme::Color::Rgb(0x08, 0x95, 0x62)),
-            BColor::HINT => ColorStyle::new(theme::Color::Dark(BaseColor::White), theme::Color::Dark(BaseColor::White)),
+            BColor::GRID1 => ColorStyle::new(theme::Color::Rgb(20, 20, 20), theme::Color::Rgb(20, 20, 20)),
+            BColor::GRID2 => ColorStyle::new(theme::Color::Rgb(80, 80, 80), theme::Color::Rgb(80, 80, 80)),
+            BColor::HINT => ColorStyle::new(theme::Color::Rgb(120, 120, 120), theme::Color::Rgb(120, 120, 120)),
             BColor::WARNING => ColorStyle::new(theme::Color::Light(BaseColor::Yellow), theme::Color::Light(BaseColor::Yellow)),
 
         }

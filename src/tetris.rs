@@ -14,8 +14,8 @@ use std::cmp::max;
 use wasm_bindgen::prelude::*;
 use web_sys::console;
 
-const SLOW_SPEED: usize = 30;
-const NORMAL_SPEED: usize = 10;
+const SLOW_SPEED: usize = 2;
+const NORMAL_SPEED: usize = 1;
 const FAST_SPEED: usize = 1;
 
 #[wasm_bindgen]
@@ -81,9 +81,8 @@ impl Tetris {
         }
         match event {
             Event::Key(Key::Down) => self.speed_up(),
-
-            Event::Char('n') => self.new_game(),
-            Event::Char('m') => self.stop_and_resume(),
+            Event::Char('N') | Event::Char('n') => self.new_game(),
+            Event::Char('M') | Event::Char('m') => self.stop_and_resume(),
             Event::Refresh => self.on_down(false, is_begin),
             Event::Char(' ') => self.on_down(true, is_begin),
             _ => EventResult::Ignored,
@@ -207,17 +206,17 @@ impl View for Tetris {
     }
 
     fn on_event(&mut self, event: Event) -> EventResult {
-        // if event == Event::Refresh {
-        //     self.frame_idx += 1;
-        //     if self.frame_idx == self.max_frame_idx {
-        //         self.frame_idx = 0;
-        //     } else {
-        //         return EventResult::Ignored;
-        //     }
-        // }
+        if event == Event::Refresh {
+            self.frame_idx += 1;
+            if self.frame_idx == self.max_frame_idx {
+                self.frame_idx = 0;
+            } else {
+                return EventResult::Ignored;
+            }
+        }
 
         match event {
-            Event::Refresh | Event::Key(Key::Down) | Event::Char(' ') | Event::Char('n') | Event::Char('m') => self.handle_merge_and_pass(event),
+            Event::Refresh | Event::Key(Key::Down) | Event::Char(' ') | Event::Char('N') | Event::Char('n') | Event::Char('M') | Event::Char('m') => self.handle_merge_and_pass(event),
             _ => self.pass_event_to_board(event),
         }
     }
