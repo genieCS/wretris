@@ -1,6 +1,6 @@
 [package]
 name = "wretris"
-version = "0.2.1"
+version = "0.3.0"
 authors = ["genieCS <geniecs@github.com>"]
 edition = "2018"
 description = "w(asm) + r(ust) + (t)etris: Rust implementation of tetris using the Cursive library with wasm backend"

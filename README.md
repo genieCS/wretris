@@ -1,86 +1,38 @@
-<div align="center">
+# wretris
+w(asm) + r(ust) + (t)etris
+<img width="982" alt="Screenshot 2023-07-26 at 4 43 56 PM" src="https://github.com/genieCS/wretris/assets/35099832/064c89e8-f401-4374-b0c6-9e2b4cc8d25e">
 
-  <h1><code>wasm-pack-template</code></h1>
+This is a simple implementation of the classic tetris game in Rust using [Cursive](https://github.com/gyscos/cursive) library.
 
-  <strong>A template for kick starting a Rust and WebAssembly project using <a href="https://github.com/rustwasm/wasm-pack">wasm-pack</a>.</strong>
+# Features
+This is a Tetris game implementation with additional keyboard shortcuts for easier block manipulation. In this game, you can move the blocks to the leftmost or rightmost position using the added shortcuts, and rotate them in the opposite direction and flipturn which is 180 degree rotation. This makes it easier to play the game with fewer keyboard inputs.
 
-  <p>
-    <a href="https://travis-ci.org/rustwasm/wasm-pack-template"><img src="https://img.shields.io/travis/rustwasm/wasm-pack-template.svg?style=flat-square" alt="Build Status" /></a>
-  </p>
-
-  <h3>
-    <a href="https://rustwasm.github.io/docs/wasm-pack/tutorials/npm-browser-packages/index.html">Tutorial</a>
-    <span> | </span>
-    <a href="https://discordapp.com/channels/442252698964721669/443151097398296587">Chat</a>
-  </h3>
-
-  <sub>Built with 🦀🕸 by <a href="https://rustwasm.github.io/">The Rust and WebAssembly Working Group</a></sub>
-</div>
-
-## About
-
-[**📚 Read this template tutorial! 📚**][template-docs]
-
-This template is designed for compiling Rust libraries into WebAssembly and
-publishing the resulting package to NPM.
-
-Be sure to check out [other `wasm-pack` tutorials online][tutorials] for other
-templates and usages of `wasm-pack`.
-
-[tutorials]: https://rustwasm.github.io/docs/wasm-pack/tutorials/index.html
-[template-docs]: https://rustwasm.github.io/docs/wasm-pack/tutorials/npm-browser-packages/index.html
-
-## 🚴 Usage
-
-### 🐑 Use `cargo generate` to Clone this Template
-
-[Learn more about `cargo generate` here.](https://github.com/ashleygwilliams/cargo-generate)
+# Installation
+To install and run the game, you'll need to have Rust and Cargo installed on your system. Once you have Rust and Cargo installed, you can clone the repository and run the game using the following commands:
 
 ```
-cargo generate --git https://github.com/rustwasm/wasm-pack-template.git --name my-project
-cd my-project
-```
-
-### 🛠️ Build with `wasm-pack build`
-
-```
+git clone https://github.com/geniecs/wretris.git
 wasm-pack build
+cd www
+npm install
+npm run dev
 ```
 
-### 🔬 Test in Headless Browsers with `wasm-pack test`
+# How to Play
+The goal of the game is to clear as many lines as possible by fitting the falling blocks together. Use the keyboard controls to move and rotate the blocks as they fall. The game ends when the blocks reach the top of the screen or 40 lines are cleared.
 
-```
-wasm-pack test --headless --firefox
-```
+# Controls
+* a: Move the block to the leftmost position
+* d: Move the block to the rightmost position
+* w: Rotate the block counter-clockwise
+* ↑ or e: Rotate the block clockwise
+* ↓: Speed up the block
+* space: Hard drop the block
+* m: Stop and resume the game
+* n: Start a new game
 
-### 🎁 Publish to NPM with `wasm-pack publish`
+# Acknowledgements
+This project was inspired by the classic Tetris game and Cursive library for Rust.
 
-```
-wasm-pack publish
-```
-
-## 🔋 Batteries Included
-
-* [`wasm-bindgen`](https://github.com/rustwasm/wasm-bindgen) for communicating
-  between WebAssembly and JavaScript.
-* [`console_error_panic_hook`](https://github.com/rustwasm/console_error_panic_hook)
-  for logging panic messages to the developer console.
-* [`wee_alloc`](https://github.com/rustwasm/wee_alloc), an allocator optimized
-  for small code size.
-* `LICENSE-APACHE` and `LICENSE-MIT`: most Rust projects are licensed this way, so these are included for you
-
-## License
-
-Licensed under either of
-
-* Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or http://www.apache.org/licenses/LICENSE-2.0)
-* MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
-
-at your option.
-
-### Contribution
-
-Unless you explicitly state otherwise, any contribution intentionally
-submitted for inclusion in the work by you, as defined in the Apache-2.0
-license, shall be dual licensed as above, without any additional terms or
-conditions.
+# License
+This project is licensed under the MIT License. See the LICENSE file for details.
