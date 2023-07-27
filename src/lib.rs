@@ -20,6 +20,7 @@ use cursive::{
 };
 use wasm_bindgen::prelude::*;
 use std::sync::Mutex;
+use web_sys::HtmlCanvasElement;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
@@ -42,7 +43,7 @@ impl Cursive {
     #[wasm_bindgen(js_name = "retris")]
     pub async fn retris() -> Cursive {
         utils::set_panic_hook();
-        alert("Hello, wasm-retris!");
+        alert("Hello, wretris!");
         let mut siv: cursive::Cursive = cursive::Cursive::new();
         let tetris = crate::tetris::Tetris::new().with_name("retris");
         siv.add_layer(tetris);
@@ -50,6 +51,20 @@ impl Cursive {
         siv.set_fps(1000);
         let siv: Mutex<cursive::Cursive> = std::sync::Mutex::new(siv);
         siv.lock().unwrap().run_with(|| backend::backend()).await;
+        Cursive { backend: siv }
+    }
+
+    #[wasm_bindgen(js_name = "retris_with_canvas")]
+    pub async fn retris_with_canvas(canvas: HtmlCanvasElement) -> Cursive {
+        utils::set_panic_hook();
+        alert("Hello, wretris!");
+        let mut siv: cursive::Cursive = cursive::Cursive::new();
+        let tetris = crate::tetris::Tetris::new().with_name("retris");
+        siv.add_layer(tetris);
+        siv.focus(&Selector::Name("retris")).unwrap();
+        siv.set_fps(1000);
+        let siv: Mutex<cursive::Cursive> = std::sync::Mutex::new(siv);
+        siv.lock().unwrap().run_with(|| backend::backend_with_canvas(canvas)).await;
         Cursive { backend: siv }
     }
 }

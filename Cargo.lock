@@ -70,7 +70,7 @@ dependencies = [
 [[package]]
 name = "cursive"
 version = "0.20.0"
-source = "git+https://github.com/geniecs/cursive#bea24fb6a906a4cabc9955e1e94b113f038fca6b"
+source = "git+https://github.com/geniecs/cursive#bc15a0115cec199339709e0f9c3fe2d97254f33f"
 dependencies = [
  "ahash",
  "cfg-if 1.0.0",
@@ -82,12 +82,14 @@ dependencies = [
  "signal-hook",
  "unicode-segmentation",
  "unicode-width",
+ "wasm-bindgen",
+ "web-sys",
 ]
 
 [[package]]
 name = "cursive-macros"
 version = "0.1.0"
-source = "git+https://github.com/geniecs/cursive#bea24fb6a906a4cabc9955e1e94b113f038fca6b"
+source = "git+https://github.com/geniecs/cursive#bc15a0115cec199339709e0f9c3fe2d97254f33f"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -97,7 +99,7 @@ dependencies = [
 [[package]]
 name = "cursive_core"
 version = "0.3.7"
-source = "git+https://github.com/geniecs/cursive#bea24fb6a906a4cabc9955e1e94b113f038fca6b"
+source = "git+https://github.com/geniecs/cursive#bc15a0115cec199339709e0f9c3fe2d97254f33f"
 dependencies = [
  "ahash",
  "crossbeam-channel",
@@ -105,7 +107,6 @@ dependencies = [
  "enum-map",
  "enumset",
  "futures",
- "getrandom",
  "js-sys",
  "lazy_static",
  "log",
