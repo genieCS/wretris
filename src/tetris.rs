@@ -15,8 +15,8 @@ use std::cmp::max;
 use wasm_bindgen::prelude::*;
 use web_sys::console;
 
-const SLOW_SPEED: usize = 2;
-const NORMAL_SPEED: usize = 1;
+const SLOW_SPEED: usize = 10;
+const NORMAL_SPEED: usize = 5;
 const FAST_SPEED: usize = 1;
 
 #[wasm_bindgen]
@@ -220,7 +220,7 @@ impl View for Tetris {
     }
 
     fn required_size(&mut self, _constraint: cursive::Vec2) -> cursive::Vec2 {
-        Vec2::new(1000, 1000)
+        Vec2::new(100, 100)
 
     }
 }

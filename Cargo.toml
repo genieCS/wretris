@@ -25,7 +25,7 @@ js-sys = "0.3.64"
 
 [dependencies.cursive]
 git = "https://github.com/geniecs/cursive"
-default = ["wasm-backend"]
+feature = ["wasm-backend"]
 
 [dependencies.web-sys]
 version = "0.3.64"
