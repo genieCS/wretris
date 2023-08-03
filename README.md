@@ -4,6 +4,8 @@ w(asm) + r(ust) + (t)etris
 
 This is a simple implementation of the classic tetris game in Rust using [Cursive](https://github.com/gyscos/cursive) library.
 
+demo: https://geniecs.github.io
+
 # Features
 This is a Tetris game implementation with additional keyboard shortcuts for easier block manipulation. In this game, you can move the blocks to the leftmost or rightmost position using the added shortcuts, and rotate them in the opposite direction and flipturn which is 180 degree rotation. This makes it easier to play the game with fewer keyboard inputs.
 
